@@ -120,13 +120,16 @@ if __name__ == '__main__':
 		for i in range(numBatches):
 			noisePredictBatch = X_noise[np.random.randint(numExamples, size = batchSize)]
 			noiseDataBatch = generator.predict(noisePredictBatch)
+
 			origDataBatch = X_train[np.random.randint(numExamples, size = batchSize)]
 			noiseLabelsBatch, origLabelsBatch = np.zeros(batchSize).astype(int), np.ones(batchSize).astype(int)
+
 			trainBatch = np.concatenate((noiseDataBatch, origDataBatch), axis = 0)
 			trainLabels = np.concatenate((noiseLabelsBatch, origLabelsBatch))
 			trainBatch, trainLabels = shuffle(trainBatch, trainLabels)
+
 			discriminatorLoss = discriminator.train_on_batch(trainBatch, trainLabels)
-			dcganLabels = np.ones(batchSize).astype(int)			
+			dcganLabels = np.ones(batchSize).astype(int)
 			discriminator.trainable = False
 			dcganLoss = dcgan.train_on_batch(noisePredictBatch, dcganLabels)
 			discriminator.trainable = True
