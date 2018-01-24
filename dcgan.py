@@ -11,7 +11,7 @@ from keras.layers import Reshape
 from keras.layers.core import Activation
 from keras.layers.normalization import BatchNormalization
 from keras.layers.convolutional import UpSampling2D
-from keras.layers.convolutional import Convolution2D, MaxPooling2D
+from keras.layers.convolutional import Conv2D, MaxPooling2D, Convolution2D
 from keras.layers.advanced_activations import LeakyReLU
 from keras.callbacks import EarlyStopping
 from keras.layers.core import Flatten
@@ -69,23 +69,22 @@ if __name__ == '__main__':
 	print('Generator Model')
 
 	generator = Sequential()
-	generator.add(Dense( input_dim=100, output_dim=(128*7*7))) #initialization
+	generator.add(Dense( input_dim=100, units=(128*7*7))) #initialization
 	generator.add(Activation('relu'))
-	generator.add(Reshape((128, 7, 7)))	
+	generator.add(Reshape((128, 7, 7)))
 	generator.add(UpSampling2D(size=(2, 2)))
-	generator.add(Convolution2D(64, 5, 5, border_mode='same'))
+	generator.add(Conv2D(64, (5, 5), padding="same"))
 	generator.add(Activation('relu'))		
 	generator.add(UpSampling2D(size=(2, 2)))
-	generator.add(Convolution2D(1, 5, 5, border_mode='same'))
+	generator.add(Conv2D(1, (5, 5), padding='same'))
 	generator.add(Activation('tanh'))
-	generator.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
 
 	print('Discriminator Model')
 
 	discriminator = Sequential()
-	discriminator.add(Convolution2D(64, 5, 5, border_mode='same', subsample=(2,2), input_shape=(1,28,28))) #initialization 
+	discriminator.add(Conv2D(64, (5, 5), padding='same', strides=(2,2), input_shape=(1,28,28))) #initialization 
 	discriminator.add(LeakyReLU(0.2))
-	discriminator.add(Convolution2D(128, 5, 5, border_mode='same', subsample=(2,2)))
+	discriminator.add(Conv2D(128, (5, 5), padding='same', strides=(2,2)))
 	discriminator.add(LeakyReLU(0.2))
 	discriminator.add(Flatten())
 	discriminator.add(Dense(1))
@@ -99,7 +98,7 @@ if __name__ == '__main__':
 	dcganInput = Input(shape=(100,))
 	x = generator(dcganInput)
 	dcganOutput = discriminator(x)
-	dcgan = Model(input=dcganInput, output=dcganOutput)
+	dcgan = Model(inputs=dcganInput, outputs=dcganOutput)
 	dcgan.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
 
 	discriminator.trainable = True
