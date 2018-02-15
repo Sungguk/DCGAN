@@ -99,10 +99,9 @@ if __name__ == '__main__':
 	discriminator.trainable = False
 
 	print('DCGAN model')
-	print('ok')
+    print('ok')
 	dcganInput = Input(shape=(100,))
 	x = generator(dcganInput)
-	print(x.shape)
 	dcganOutput = discriminator(x)
 	dcgan = Model(inputs=dcganInput, outputs=dcganOutput)
 	dcgan.compile(loss='binary_crossentropy', optimizer=adam, metrics=['accuracy'])
